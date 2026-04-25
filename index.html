@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suvix Cloud | Professional Web Solutions</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
+    <style>
+        /* === CSS Variables & Reset === */
+        :root {
+            --bg-color: #0b0c10;
+            --surface-color: #1f2833;
+            --primary-color: #66fcf1;
+            --secondary-color: #45a29e;
+            --text-main: #ffffff;
+            --text-muted: #c5c6c7;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            overflow-x: hidden;
+        }
+
+        /* === Navigation === */
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 20px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(11, 12, 16, 0.85);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            border-bottom: 1px solid rgba(102, 252, 241, 0.2);
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--primary-color);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+        }
+
+        nav ul li a {
+            color: var(--text-main);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            text-transform: uppercase;
+            transition: color 0.3s ease;
+        }
+
+        nav ul li a:hover {
+            color: var(--primary-color);
+        }
+
+        .btn-nav {
+            background: transparent;
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+            padding: 8px 20px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-nav:hover {
+            background: var(--primary-color);
+            color: var(--bg-color);
+        }
+
+        /* === Sections Setup === */
+        section {
+            min-height: 100vh;
+            padding: 100px 10vw 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .section-title {
+            font-size: 40px;
+            font-weight: 800;
+            margin-bottom: 40px;
+            color: var(--primary-color);
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* === 1. Hero Section (with 3D) === */
+        #home {
+            position: relative;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: 0;
+        }
+
+        .hero-content {
+            flex: 1;
+            z-index: 2;
+            max-width: 600px;
+        }
+
+        .hero-content h1 {
+            font-size: 55px;
+            line-height: 1.1;
+            margin-bottom: 20px;
+        }
+
+        .hero-content p {
+            font-size: 18px;
+            color: var(--text-muted);
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .hero-btn {
+            background: var(--primary-color);
+            color: var(--bg-color);
+            padding: 15px 35px;
+            font-size: 16px;
+            font-weight: 800;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: inline-block;
+        }
+
+        .hero-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(102, 252, 241, 0.3);
+        }
+
+        #canvas-container {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 60%;
+            height: 100vh;
+            z-index: 1;
+            pointer-events: none; /* Lets clicks pass through to background */
+        }
+
+        /* === 2. About Section === */
+        .about-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 50px;
+            align-items: center;
+        }
+        
+        .about-text p {
+            color: var(--text-muted);
+            font-size: 18px;
+            line-height: 1.8;
+            margin-bottom: 20px;
+        }
+
+        .founders {
+            background: var(--surface-color);
+            padding: 40px;
+            border-radius: 15px;
+            border-left: 5px solid var(--primary-color);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .founders h3 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            font-size: 24px;
+        }
+
+        /* === Shared Grid for Services & Portfolio === */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .card {
+            background: var(--surface-color);
+            padding: 40px 30px;
+            border-radius: 10px;
+            text-align: center;
+            transition: transform 0.3s ease;
+            border-bottom: 3px solid transparent;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            border-bottom: 3px solid var(--primary-color);
+        }
+
+        .card h3 {
+            font-size: 22px;
+            margin-bottom: 15px;
+            color: #fff;
+        }
+
+        .card p {
+            color: var(--text-muted);
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        /* === 5. Why Choose Us === */
+        .why-us-list {
+            list-style: none;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .why-us-list li {
+            background: var(--surface-color);
+            margin-bottom: 20px;
+            padding: 25px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+        }
+
+        .why-us-list li span {
+            color: var(--primary-color);
+            font-size: 24px;
+            font-weight: 800;
+            margin-right: 20px;
+        }
+
+        /* === 6. Appointment Form === */
+        .form-container {
+            max-width: 700px;
+            margin: 0 auto;
+            background: var(--surface-color);
+            padding: 50px;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            width: 100%;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 15px;
+            background: var(--bg-color);
+            border: 1px solid #333;
+            color: #fff;
+            border-radius: 5px;
+            font-size: 16px;
+            outline: none;
+            transition: border 0.3s ease;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-color);
+        }
+
+        input[type="file"] {
+            padding: 10px;
+            background: transparent;
+            border: 1px dashed var(--primary-color);
+            cursor: pointer;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 15px;
+            background: var(--primary-color);
+            color: var(--bg-color);
+            font-size: 18px;
+            font-weight: 800;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: opacity 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            opacity: 0.8;
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            header { padding: 20px; flex-direction: column; gap: 15px; }
+            #home { flex-direction: column; text-align: center; justify-content: center; }
+            #canvas-container { width: 100%; opacity: 0.5; }
+            .about-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">Suvix Cloud</div>
+        <nav>
+            <ul>
+                <li><a href="#home">Home</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#services">Services</a></li>
+                <li><a href="#portfolio">Portfolio</a></li>
+                <li><a href="#appointment" class="btn-nav">Book Appointment</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section id="home">
+        <div class="hero-content">
+            <h1>Empower Your <span style="color: var(--primary-color);">Local Business</span> Online</h1>
+            <p>We build professional, high-performance websites that turn local traffic into loyal customers. Let Suvix Cloud build your digital storefront today.</p>
+            <a href="#appointment" class="hero-btn">Start Your Project</a>
+        </div>
+        <div id="canvas-container"></div>
+    </section>
+
+    <section id="about">
+        <h2 class="section-title">Who We Are</h2>
+        <div class="about-grid">
+            <div class="about-text">
+                <p>At <strong>Suvix Cloud</strong>, we understand that for a local business to thrive today, it needs a powerful digital presence. We bridge the gap between traditional brick-and-mortar operations and the boundless opportunities of the internet.</p>
+                <p>We don't just build websites; we build digital growth engines tailored specifically to your business niche, ensuring you rank higher, look better, and convert faster.</p>
+            </div>
+            <div class="founders">
+                <h3>Meet the Founders</h3>
+                <p style="color: #fff; font-size: 18px; margin-bottom: 10px;"><strong>Shivam & Sumit</strong></p>
+                <p style="color: var(--text-muted); font-size: 14px; line-height: 1.6;">Driven by a passion for technology and local business empowerment, Shivam and Sumit founded Suvix Cloud to provide enterprise-grade web solutions at accessible scales. Together, they lead a team dedicated to making your brand unforgettable.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="services">
+        <h2 class="section-title">Our Services</h2>
+        <div class="card-grid">
+            <div class="card">
+                <h3>Custom Web Design</h3>
+                <p>Stunning, responsive websites that reflect your brand identity and captivate your audience on any device.</p>
+            </div>
+            <div class="card">
+                <h3>Local SEO</h3>
+                <p>Dominate local search results. We optimize your online presence so customers in your area find you first.</p>
+            </div>
+            <div class="card">
+                <h3>E-Commerce Solutions</h3>
+                <p>Take your local sales global. Secure, easy-to-manage online stores that drive revenue 24/7.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="portfolio">
+        <h2 class="section-title">Recent Work</h2>
+        <div class="card-grid">
+            <div class="card">
+                <div style="height: 150px; background: #2a3644; border-radius: 8px; margin-bottom: 20px; display:flex; align-items:center; justify-content:center; color: var(--primary-color); font-weight: bold;">Project Alpha</div>
+                <h3>Downtown Cafe</h3>
+                <p>Increased online orders by 150% with a seamless menu and checkout integration.</p>
+            </div>
+            <div class="card">
+                <div style="height: 150px; background: #2a3644; border-radius: 8px; margin-bottom: 20px; display:flex; align-items:center; justify-content:center; color: var(--primary-color); font-weight: bold;">Project Beta</div>
+                <h3>City Hardware</h3>
+                <p>Digitized a 20-year-old local hardware store, expanding their customer base city-wide.</p>
+            </div>
+            <div class="card">
+                <div style="height: 150px; background: #2a3644; border-radius: 8px; margin-bottom: 20px; display:flex; align-items:center; justify-content:center; color: var(--primary-color); font-weight: bold;">Project Gamma</div>
+                <h3>Apex Dental Clinic</h3>
+                <p>Streamlined patient onboarding with an automated appointment booking system.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="why-us">
+        <h2 class="section-title">The Suvix Advantage</h2>
+        <ul class="why-us-list">
+            <li>
+                <span>01</span>
+                <div>
+                    <strong style="font-size: 18px; display: block; margin-bottom: 5px;">Modern & Fast Technologies</strong>
+                    <span style="color: var(--text-muted); font-size: 15px;">We build using the latest web standards ensuring lightning-fast load times.</span>
+                </div>
+            </li>
+            <li>
+                <span>02</span>
+                <div>
+                    <strong style="font-size: 18px; display: block; margin-bottom: 5px;">3D Interactive Experiences</strong>
+                    <span style="color: var(--text-muted); font-size: 15px;">Stand out from competitors with cutting-edge 3D graphics and animations.</span>
+                </div>
+            </li>
+            <li>
+                <span>03</span>
+                <div>
+                    <strong style="font-size: 18px; display: block; margin-bottom: 5px;">Dedicated Support</strong>
+                    <span style="color: var(--text-muted); font-size: 15px;">Shivam, Sumit, and the team provide ongoing maintenance so you can focus on your business.</span>
+                </div>
+            </li>
+        </ul>
+    </section>
+
+    <section id="appointment">
+        <h2 class="section-title">Book an Appointment</h2>
+        <div class="form-container">
+            <form id="bookingForm" onsubmit="handleFormSubmit(event)">
+                <div class="form-group">
+                    <label for="name">Full Name</label>
+                    <input type="text" id="name" class="form-control" placeholder="John Doe" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" class="form-control" placeholder="john@example.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="preference">Project Preference</label>
+                    <select id="preference" class="form-control" required>
+                        <option value="" disabled selected>Select what you need help with...</option>
+                        <option value="new_website">Build a New Website</option>
+                        <option value="redesign">Redesign Existing Website</option>
+                        <option value="ecommerce">E-Commerce Store</option>
+                        <option value="seo">SEO & Marketing</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="details">Project Details (Optional)</label>
+                    <textarea id="details" class="form-control" rows="4" placeholder="Tell us a bit about your business..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="file">Attach Brand Assets or Brief (Optional)</label>
+                    <input type="file" id="file" class="form-control" accept=".pdf,.doc,.docx,.jpg,.png">
+                </div>
+
+                <button type="submit" class="submit-btn">Schedule Strategy Call</button>
+            </form>
+        </div>
+    </section>
+
+    <script>
+        // Form Submission Handler
+        function handleFormSubmit(event) {
+            event.preventDefault(); // Prevents page reload
+            
+            // Get values
+            const name = document.getElementById('name').value;
+            const preference = document.getElementById('preference').value;
+            
+            // In a real scenario, you would send this data to a server using fetch() or an API.
+            // For now, we show a professional success message.
+            alert(`Thank you, ${name}! Your request for a "${preference.replace('_', ' ')}" project has been received by Suvix Cloud. Shivam or Sumit will contact you shortly to confirm your appointment.`);
+            
+            // Clear the form
+            document.getElementById('bookingForm').reset();
+        }
+
+        // ==========================================
+        // THREE.JS INTERACTIVE 3D ANIMATION LOGIC
+        // ==========================================
+        
+        // 1. Scene Setup
+        const container = document.getElementById('canvas-container');
+        const scene = new THREE.Scene();
+        
+        // 2. Camera Setup
+        const camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
+        camera.position.z = 5;
+
+        // 3. Renderer Setup
+        const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+        renderer.setSize(container.clientWidth, container.clientHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        container.appendChild(renderer.domElement);
+
+        // 4. Create the 3D Object (A high-tech wireframe sphere representing "The Cloud/Web")
+        const geometry = new THREE.IcosahedronGeometry(2.5, 1);
+        const material = new THREE.MeshBasicMaterial({ 
+            color: 0x66fcf1, 
+            wireframe: true,
+            transparent: true,
+            opacity: 0.3
+        });
+        const sphere = new THREE.Mesh(geometry, material);
+        scene.add(sphere);
+
+        // Add an inner solid shape for depth
+        const innerGeo = new THREE.IcosahedronGeometry(1.5, 0);
+        const innerMat = new THREE.MeshBasicMaterial({ 
+            color: 0x45a29e, 
+            wireframe: false,
+            transparent: true,
+            opacity: 0.1
+        });
+        const innerSphere = new THREE.Mesh(innerGeo, innerMat);
+        scene.add(innerSphere);
+
+        // 5. Interactive Mouse Tracking
+        let mouseX = 0;
+        let mouseY = 0;
+        let targetX = 0;
+        let targetY = 0;
+
+        const windowHalfX = window.innerWidth / 2;
+        const windowHalfY = window.innerHeight / 2;
+
+        document.addEventListener('mousemove', (event) => {
+            mouseX = (event.clientX - windowHalfX);
+            mouseY = (event.clientY - windowHalfY);
+        });
+
+        // 6. Animation Loop
+        function animate() {
+            requestAnimationFrame(animate);
+
+            // Smoothly interpolate target rotation based on mouse position
+            targetX = mouseX * 0.001;
+            targetY = mouseY * 0.001;
+
+            // Apply rotation to spheres
+            sphere.rotation.y += 0.005; // Base automatic rotation
+            sphere.rotation.x += 0.002;
+            
+            // Add mouse interaction effect
+            sphere.rotation.y += 0.05 * (targetX - sphere.rotation.y);
+            sphere.rotation.x += 0.05 * (targetY - sphere.rotation.x);
+
+            innerSphere.rotation.y -= 0.003;
+            innerSphere.rotation.x -= 0.003;
+
+            renderer.render(scene, camera);
+        }
+
+        // 7. Handle Window Resize smoothly
+        window.addEventListener('resize', () => {
+            camera.aspect = container.clientWidth / container.clientHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(container.clientWidth, container.clientHeight);
+        });
+
+        // Start Animation
+        animate();
+    </script>
+</body>
+</html>
